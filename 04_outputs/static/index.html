@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Interactive SLA Knowledge Tracing Sandbox for English L2 instructors. Predict and analyze token-level student errors using syntactic grammar clashes.">
+    <title>SLA Knowledge Tracing Sandbox</title>
+    <!-- Outfit Font from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <div class="logo-glow"></div>
+            <span class="logo-icon">▲</span>
+            <div class="logo-text">
+                <span class="brand-name">ANTIGRAVITY</span>
+                <span class="sub-brand">SLA KNOWLEDGE TRACING</span>
+            </div>
+        </div>
+        <div class="header-tag">ESL RESEARCH & INSTRUCTION DEPLOYMENT</div>
+    </header>
+
+    <main>
+        <section class="intro-section">
+            <h1>SLA Knowledge Tracing Sandbox</h1>
+            <p class="subtitle">An AI-driven decision-support tool for curriculum designers. Predict spelling hazards, syntactic omissions, and lexical mapping clashes on English sentences for native Spanish speakers.</p>
+        </section>
+
+        <div class="dashboard-grid">
+            <!-- Left Panel: Input & Controls -->
+            <section class="card input-card">
+                <h2 class="card-title"><span class="number-badge">1</span> Define Sentence & Context</h2>
+                <form id="analysis-form" onsubmit="event.preventDefault();">
+                    <div class="form-group">
+                        <label for="preset-select">Select Sample Sentence</label>
+                        <select id="preset-select">
+                            <option value="custom" selected>-- Type a custom sentence below --</option>
+                            <option value="0">"He works in a bank." (Auditory locative preposition clash)</option>
+                            <option value="1">"She plays soccer." (Translation 3sg grammatical clash)</option>
+                            <option value="2">"They run." (Baseline tapping format)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="sentence-input">English Sentence</label>
+                        <input type="text" id="sentence-input" placeholder="e.g., She works in a school." value="She works in a school." required>
+                        <span class="input-helper">Use words in our common lexicon (He, She, works, plays, is, in, on, at, school, house, etc.) for optimal tagger accuracy.</span>
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <label for="days-slider">Days in Course</label>
+                            <span id="days-val">10 days</span>
+                        </div>
+                        <input type="range" id="days-slider" min="0" max="120" value="10" step="1">
+                        <span class="slider-hint">Higher duration indicates increased course difficulty and user proficiency.</span>
+                    </div>
+
+                    <div class="controls-row">
+                        <div class="form-group half-width">
+                            <label for="format-select">Exercise Format</label>
+                            <select id="format-select">
+                                <option value="listen">Listen (Auditory recall)</option>
+                                <option value="reverse_translate" selected>Reverse Translate (Writing)</option>
+                                <option value="reverse_tap">Reverse Tap (Tapping word bank)</option>
+                            </select>
+                        </div>
+                        <div class="form-group half-width">
+                            <label for="session-select">Session Type</label>
+                            <select id="session-select">
+                                <option value="lesson" selected>Lesson (New content)</option>
+                                <option value="practice">Practice (Reinforcement)</option>
+                                <option value="test">Test (Evaluation)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="client-select">User Platform</label>
+                        <select id="client-select">
+                            <option value="web">Web Browser</option>
+                            <option value="android" selected>Android Mobile App</option>
+                            <option value="ios">iOS Mobile App</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" id="submit-btn" class="btn btn-primary">Analyze Acquisition Risk</button>
+                </form>
+            </section>
+
+            <!-- Right Panel: Visual Heatmap & Details -->
+            <div class="right-column">
+                <!-- Heatmap Display -->
+                <section class="card heatmap-card">
+                    <h2 class="card-title"><span class="number-badge">2</span> Token Difficulty Heatmap</h2>
+                    <div id="heatmap-container" class="heatmap-container">
+                        <p class="empty-state">Submit a sentence to visualize the acquisition difficulty heatmap.</p>
+                    </div>
+                    
+                    <div class="legend-row">
+                        <div class="legend-item"><span class="legend-color low"></span> Low Risk (&lt;10%)</div>
+                        <div class="legend-item"><span class="legend-color med"></span> Med Risk (10%-20%)</div>
+                        <div class="legend-item"><span class="legend-color high"></span> High Risk (&ge;20%)</div>
+                    </div>
+                </section>
+
+                <!-- Pedagogical Explanation Details -->
+                <section class="card details-card" id="details-card">
+                    <h2 class="card-title"><span class="number-badge">3</span> Pedagogical Diagnostic Details</h2>
+                    <div id="details-content">
+                        <p class="empty-state">Select a word in the heatmap above to view its SLA grammatical diagnostic markers and odds ratios.</p>
+                    </div>
+                </section>
+            </div>
+        </div>
+        
+        <!-- Bottom: Research Context & Metrics -->
+        <div class="metrics-grid">
+            <section class="card model-metrics-card">
+                <h3 class="card-sub-title">Model Specifications & Calibration</h3>
+                <div class="stats-row">
+                    <div class="stat-box">
+                        <div class="stat-num">0.6611</div>
+                        <div class="stat-label">Logistic Regression Test AUC-ROC</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-num">0.6538</div>
+                        <div class="stat-label">Decision Tree Test AUC-ROC</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-num">0.14 / 0.13</div>
+                        <div class="stat-label">Optimal Error F1 Decision Threshold</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card SLA-theory-card">
+                <h3 class="card-sub-title">SLA Explanations & Errorless Teaching</h3>
+                <p class="theory-text">Our models are trained under an <strong>Interpretable Context Methodology (ICM)</strong>. Rather than predicting errors blindly, we track interlanguage transfer bottlenecks:</p>
+                <ul class="theory-list">
+                    <li><strong>Preposition Clashes:</strong> Native Spanish speakers map 1-to-many prepositions (e.g. <em>en</em> maps to <em>in, on, at</em>), increasing error rates on spatial prepositions by <strong>28.8%</strong>.</li>
+                    <li><strong>3rd Person Singular -s Omission:</strong> Spanish verbal systems are highly inflected, making the English singular ending redundant. However, explicit sentence starters show a <strong>38.54%</strong> error rate in writing.</li>
+                    <li><strong>Format Constraints:</strong> Auditory spelling recall (Listen formats) increases error odds by **+325.3%**, highlighting phoneme-grapheme conversion hurdles.</li>
+                </ul>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Antigravity SLA Research Team. For internal use by CareerTalkLab curriculum designers and instructors.</p>
+    </footer>
+
+    <!-- JavaScript code -->
+    <script src="/static/app.js"></script>
+</body>
+</html>

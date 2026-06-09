@@ -1,0 +1,200 @@
+[
+  {
+    "rule_id": "SLA_RULE_01",
+    "conditions": [
+      {
+        "feature": "format_listen",
+        "operator": "<=",
+        "value": 0.5,
+        "description": "format_listen is False"
+      },
+      {
+        "feature": "format_reverse_translate",
+        "operator": "<=",
+        "value": 0.5,
+        "description": "format_reverse_translate is False"
+      },
+      {
+        "feature": "token_order",
+        "operator": "<=",
+        "value": 1.5,
+        "description": "token_order <= 1.50"
+      },
+      {
+        "feature": "is_verb_3sg",
+        "operator": ">",
+        "value": 0.5,
+        "description": "is_verb_3sg is True"
+      }
+    ],
+    "samples_in_cohort": 397,
+    "predicted_error_rate": "38.54%",
+    "scaffold_action": "FORCE_TAP_WORD_BANK_WITH_EXPLICIT_HINT",
+    "rationale": "Very high error probability (>= 30%). Provide maximal scaffolding to prevent error consolidation."
+  },
+  {
+    "rule_id": "SLA_RULE_02",
+    "conditions": [
+      {
+        "feature": "format_listen",
+        "operator": "<=",
+        "value": 0.5,
+        "description": "format_listen is False"
+      },
+      {
+        "feature": "format_reverse_translate",
+        "operator": ">",
+        "value": 0.5,
+        "description": "format_reverse_translate is True"
+      },
+      {
+        "feature": "token_order",
+        "operator": ">",
+        "value": 1.5,
+        "description": "token_order > 1.50"
+      },
+      {
+        "feature": "session_practice",
+        "operator": ">",
+        "value": 0.5,
+        "description": "session_practice is True"
+      }
+    ],
+    "samples_in_cohort": 126666,
+    "predicted_error_rate": "21.26%",
+    "scaffold_action": "INJECT_POPUP_GRAMMAR_ALERT",
+    "rationale": "High error probability (20% - 30%). Alert learner of the specific grammatical rule prior to execution."
+  },
+  {
+    "rule_id": "SLA_RULE_03",
+    "conditions": [
+      {
+        "feature": "format_listen",
+        "operator": ">",
+        "value": 0.5,
+        "description": "format_listen is True"
+      },
+      {
+        "feature": "is_pron_subject",
+        "operator": "<=",
+        "value": 0.5,
+        "description": "is_pron_subject is False"
+      },
+      {
+        "feature": "session_practice",
+        "operator": "<=",
+        "value": 0.5,
+        "description": "session_practice is False"
+      },
+      {
+        "feature": "days_in_course",
+        "operator": ">",
+        "value": -0.13970138877630234,
+        "description": "days_in_course > -0.14"
+      }
+    ],
+    "samples_in_cohort": 214672,
+    "predicted_error_rate": "20.26%",
+    "scaffold_action": "INJECT_POPUP_GRAMMAR_ALERT",
+    "rationale": "High error probability (20% - 30%). Alert learner of the specific grammatical rule prior to execution."
+  },
+  {
+    "rule_id": "SLA_RULE_04",
+    "conditions": [
+      {
+        "feature": "format_listen",
+        "operator": ">",
+        "value": 0.5,
+        "description": "format_listen is True"
+      },
+      {
+        "feature": "is_pron_subject",
+        "operator": "<=",
+        "value": 0.5,
+        "description": "is_pron_subject is False"
+      },
+      {
+        "feature": "session_practice",
+        "operator": ">",
+        "value": 0.5,
+        "description": "session_practice is True"
+      },
+      {
+        "feature": "token_order",
+        "operator": "<=",
+        "value": 3.5,
+        "description": "token_order <= 3.50"
+      }
+    ],
+    "samples_in_cohort": 73300,
+    "predicted_error_rate": "22.09%",
+    "scaffold_action": "INJECT_POPUP_GRAMMAR_ALERT",
+    "rationale": "High error probability (20% - 30%). Alert learner of the specific grammatical rule prior to execution."
+  },
+  {
+    "rule_id": "SLA_RULE_05",
+    "conditions": [
+      {
+        "feature": "format_listen",
+        "operator": ">",
+        "value": 0.5,
+        "description": "format_listen is True"
+      },
+      {
+        "feature": "is_pron_subject",
+        "operator": "<=",
+        "value": 0.5,
+        "description": "is_pron_subject is False"
+      },
+      {
+        "feature": "session_practice",
+        "operator": ">",
+        "value": 0.5,
+        "description": "session_practice is True"
+      },
+      {
+        "feature": "token_order",
+        "operator": ">",
+        "value": 3.5,
+        "description": "token_order > 3.50"
+      }
+    ],
+    "samples_in_cohort": 38953,
+    "predicted_error_rate": "31.93%",
+    "scaffold_action": "FORCE_TAP_WORD_BANK_WITH_EXPLICIT_HINT",
+    "rationale": "Very high error probability (>= 30%). Provide maximal scaffolding to prevent error consolidation."
+  },
+  {
+    "rule_id": "SLA_RULE_06",
+    "conditions": [
+      {
+        "feature": "format_listen",
+        "operator": ">",
+        "value": 0.5,
+        "description": "format_listen is True"
+      },
+      {
+        "feature": "is_pron_subject",
+        "operator": ">",
+        "value": 0.5,
+        "description": "is_pron_subject is True"
+      },
+      {
+        "feature": "token_order",
+        "operator": ">",
+        "value": 1.5,
+        "description": "token_order > 1.50"
+      },
+      {
+        "feature": "token_order",
+        "operator": ">",
+        "value": 3.5,
+        "description": "token_order > 3.50"
+      }
+    ],
+    "samples_in_cohort": 1355,
+    "predicted_error_rate": "29.74%",
+    "scaffold_action": "INJECT_POPUP_GRAMMAR_ALERT",
+    "rationale": "High error probability (20% - 30%). Alert learner of the specific grammatical rule prior to execution."
+  }
+]

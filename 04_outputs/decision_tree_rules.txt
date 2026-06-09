@@ -1,0 +1,46 @@
+If format_listen is False:
+|   If format_reverse_translate is False:
+|   |   If token_order <= 1.50:
+|   |   |   If is_verb_3sg is False:
+|   |   |   |   Leaf: Error Rate = 2.45% (Samples: 213034)
+|   |   |   If is_verb_3sg is True:
+|   |   |   |   Leaf: Error Rate = 38.54% (Samples: 397)
+|   |   If token_order > 1.50:
+|   |   |   If session_practice is False:
+|   |   |   |   Leaf: Error Rate = 5.55% (Samples: 283261)
+|   |   |   If session_practice is True:
+|   |   |   |   Leaf: Error Rate = 7.94% (Samples: 56158)
+|   If format_reverse_translate is True:
+|   |   If token_order <= 1.50:
+|   |   |   If translate_x_pron is False:
+|   |   |   |   Leaf: Error Rate = 12.81% (Samples: 161676)
+|   |   |   If translate_x_pron is True:
+|   |   |   |   Leaf: Error Rate = 6.52% (Samples: 101088)
+|   |   If token_order > 1.50:
+|   |   |   If session_practice is False:
+|   |   |   |   Leaf: Error Rate = 14.58% (Samples: 551250)
+|   |   |   If session_practice is True:
+|   |   |   |   Leaf: Error Rate = 21.26% (Samples: 126666)
+If format_listen is True:
+|   If is_pron_subject is False:
+|   |   If session_practice is False:
+|   |   |   If days_in_course <= -0.14:
+|   |   |   |   Leaf: Error Rate = 14.97% (Samples: 179255)
+|   |   |   If days_in_course > -0.14:
+|   |   |   |   Leaf: Error Rate = 20.26% (Samples: 214672)
+|   |   If session_practice is True:
+|   |   |   If token_order <= 3.50:
+|   |   |   |   Leaf: Error Rate = 22.09% (Samples: 73300)
+|   |   |   If token_order > 3.50:
+|   |   |   |   Leaf: Error Rate = 31.93% (Samples: 38953)
+|   If is_pron_subject is True:
+|   |   If token_order <= 1.50:
+|   |   |   If client_ios is False:
+|   |   |   |   Leaf: Error Rate = 8.49% (Samples: 71518)
+|   |   |   If client_ios is True:
+|   |   |   |   Leaf: Error Rate = 5.80% (Samples: 16160)
+|   |   If token_order > 1.50:
+|   |   |   If token_order <= 3.50:
+|   |   |   |   Leaf: Error Rate = 14.44% (Samples: 8461)
+|   |   |   If token_order > 3.50:
+|   |   |   |   Leaf: Error Rate = 29.74% (Samples: 1355)

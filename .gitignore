@@ -1,0 +1,37 @@
+# .gitignore
+
+# Virtual Environment
+venv/
+.venv/
+env/
+ENV/
+
+# Raw Data files
+*.train
+*.csv
+!04_outputs/*.csv
+
+# Environment Variables & Credentials
+.env
+.env.*
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Model Files (pkl files)
+*.pkl
+
+# Task logs and temporary artifacts
+.system_generated/
+*.log
+scratch/
+
+# Proprietary IP: Turkish L1 Model & Simulator (Option C)
+*turkish*
+*Turkish*
+*tr_l1*
+*tr_l2*
+05_turkish_simulator/

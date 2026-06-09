@@ -1,0 +1,102 @@
+[
+  {
+    "exercise_id": "mock_listening_01",
+    "exercise_format": "listen",
+    "session_type": "practice",
+    "client": "android",
+    "days_in_course": 10.0,
+    "sentence": "He works in a bank.",
+    "tokens": [
+      {
+        "token": "He",
+        "part_of_speech": "PRON",
+        "morphology": "Person=3|Number=Sing",
+        "dependency_label": "nsubj",
+        "token_order": 1
+      },
+      {
+        "token": "works",
+        "part_of_speech": "VERB",
+        "morphology": "Person=3|Number=Sing|Tense=Pres",
+        "dependency_label": "ROOT",
+        "token_order": 2
+      },
+      {
+        "token": "in",
+        "part_of_speech": "ADP",
+        "morphology": "null",
+        "dependency_label": "prep",
+        "token_order": 3
+      },
+      {
+        "token": "a",
+        "part_of_speech": "DET",
+        "morphology": "null",
+        "dependency_label": "det",
+        "token_order": 4
+      },
+      {
+        "token": "bank",
+        "part_of_speech": "NOUN",
+        "morphology": "null",
+        "dependency_label": "pobj",
+        "token_order": 5
+      }
+    ]
+  },
+  {
+    "exercise_id": "mock_translation_02",
+    "exercise_format": "reverse_translate",
+    "session_type": "lesson",
+    "client": "web",
+    "days_in_course": 1.0,
+    "sentence": "She plays soccer.",
+    "tokens": [
+      {
+        "token": "She",
+        "part_of_speech": "PRON",
+        "morphology": "Person=3|Number=Sing",
+        "dependency_label": "nsubj",
+        "token_order": 1
+      },
+      {
+        "token": "plays",
+        "part_of_speech": "VERB",
+        "morphology": "Person=3|Number=Sing|Tense=Pres",
+        "dependency_label": "ROOT",
+        "token_order": 2
+      },
+      {
+        "token": "soccer",
+        "part_of_speech": "NOUN",
+        "morphology": "null",
+        "dependency_label": "dobj",
+        "token_order": 3
+      }
+    ]
+  },
+  {
+    "exercise_id": "mock_tap_03",
+    "exercise_format": "reverse_tap",
+    "session_type": "test",
+    "client": "ios",
+    "days_in_course": 20.0,
+    "sentence": "They run.",
+    "tokens": [
+      {
+        "token": "They",
+        "part_of_speech": "PRON",
+        "morphology": "Person=3|Number=Plur",
+        "dependency_label": "nsubj",
+        "token_order": 1
+      },
+      {
+        "token": "run",
+        "part_of_speech": "VERB",
+        "morphology": "Person=3|Number=Plur|Tense=Pres",
+        "dependency_label": "ROOT",
+        "token_order": 2
+      }
+    ]
+  }
+]
