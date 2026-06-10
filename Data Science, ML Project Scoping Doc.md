@@ -229,8 +229,8 @@ Describe specifically how you prevent data leakage:
 
 | Split | Strategy | Size | Notes |
 | :---- | :---- | :---- | :---- |
-| Training | Sequential split (exercise_id <= 1407413) | 2,097,204 tokens | Represents 80% of exercises. Split sequentially to prevent leakage of future user progress. |
-| Test (hold-out) | Sequential split (exercise_id > 1407413) | 525,753 tokens | Represents 20% of exercises. Untouched until final evaluation. |
+| Training | Partitioned by user_id (80% unique users) | 2,110,404 tokens | Represents 80% of unique users (2,074 users). Prevents student-characteristic leakage. |
+| Test (hold-out) | Partitioned by user_id (20% unique users) | 512,553 tokens | Represents 20% of unique users (519 users). Untouched until final evaluation. |
 
 **Model Development Experiment Tracking**
 
@@ -244,27 +244,27 @@ Describe specifically how you prevent data leakage:
 | Aspect | Details |
 | :---- | :---- |
 | Method | Manual evaluation of tree depth constraints (`max_depth` from 3 to 6) to balance performance vs interpretability. Grid search over probability thresholds to maximize F1-score. |
-| Parameters tuned | Tree depth (winning: `max_depth=4`), decision threshold (LR winning: `0.14`, DT winning: `0.13`) |
+| Parameters tuned | Tree depth (winning: `max_depth=4`), decision threshold (LR winning: `0.13`, DT winning: `0.13`) |
 | Best configuration | Logistic Regression (`C=1.0`), Decision Tree (`max_depth=4`, `random_state=42`) |
 
 **Evaluation**
 
 * *Baseline performance:* Majority-class prediction (always predicting "No Error") yields 87.39% accuracy but 0.00 AUC-ROC and 0.00 F1-score due to the 7:1 class imbalance.
 * *Primary metric \+ justification:* AUC-ROC is selected because it measures the model's ability to rank items by error probability, independent of threshold.
-  - **Logistic Regression Test AUC-ROC:** `0.6611` (CV: `0.6677 +/- 0.0008`)
-  - **Decision Tree (depth=4) Test AUC-ROC:** `0.6538` (CV: `0.6623 +/- 0.0007`)
+  - **Logistic Regression Test AUC-ROC:** `0.6609` (CV: `0.6679 +/- 0.0025` using `StratifiedGroupKFold`)
+  - **Decision Tree (depth=4) Test AUC-ROC:** `0.6600` (CV: `0.6613 +/- 0.0031` using `StratifiedGroupKFold`)
 * *Secondary metrics:* F1-score (with optimized thresholds to handle imbalance):
-  - **Logistic Regression (Threshold = 0.14):** F1 = `0.2758`, Precision = `0.1746`, Recall = `0.6554`
-  - **Decision Tree (Threshold = 0.13):** F1 = `0.2688`, Precision = `0.1628`, Recall = `0.7695`
-* *Threshold / trade-off decisions:* Since predicting when errors happen is critical for adapting lessons, we optimized the decision threshold to maximize F1-score on the training set. This significantly boosts recall (finding 65-77% of all errors) at the cost of precision.
+  - **Logistic Regression (Threshold = 0.13):** F1 = `0.2936`, Precision = `0.1852`, Recall = `0.7081`
+  - **Decision Tree (Threshold = 0.13):** F1 = `0.2886`, Precision = `0.1784`, Recall = `0.7549`
+* *Threshold / trade-off decisions:* Since raw probabilities are utilized directly by the curriculum rules (e.g. `prob_error >= 30%`), standard Logistic Regression is essential to preserve model calibration. Using `class_weight='balanced'` would distort these probabilities. Instead, boundary threshold tuning lets us adjust the precision/recall trade-off without altering calibration. We optimize the threshold to maximize F1, significantly boosting recall (finding 70-75% of all errors) at the expense of precision.
 * *Calibration:* The Logistic Regression model yields well-calibrated probability scores, providing instructors with the actual probability of error.
 
 **Error Analysis**
 
 | Analysis | Findings |
 | :---- | :---- |
-| Confusion matrix / residual analysis | LR confusion matrix: 267,590 TN, 195,157 FP, 21,712 FN, 41,294 TP. High false positive rate is a side-effect of optimizing F1-score to maximize recall in the face of class imbalance. |
-| Slice analysis | Error rates are extremely high in Listening formats (error rate up to 32% for sentence-tail words) and 3rd person singular present verbs when used as sentence starters (38.54% error rate). |
+| Confusion matrix / residual analysis | LR confusion matrix: 234,929 TN, 210,174 FP, 19,690 FN, 47,760 TP. High false positive rate is a side-effect of optimizing F1-score to maximize recall in the face of class imbalance. |
+| Slice analysis | Error rates are extremely high in Listening formats (up to 31.12% for late-sentence tokens) and in writing formats when starting a sentence with a 3rd person singular verb (which triggers Rule 02/03 scaffolding). |
 | Failure patterns | The model struggles to predict spelling errors that arise from user typos rather than systematic grammatical clashes. These typos appear randomly. |
 | Fairness audit | System behaves consistently across sequential partitions of the test set, reflecting stable prediction quality. |
 

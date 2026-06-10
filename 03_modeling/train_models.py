@@ -8,8 +8,9 @@ import psycopg2
 from dotenv import load_dotenv
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier, export_text
-from sklearn.model_selection import StratifiedKFold
+from sklearn.model_selection import StratifiedGroupKFold, train_test_split
 from sklearn.metrics import roc_auc_score, f1_score, precision_score, recall_score, accuracy_score, confusion_matrix
+import warnings
 
 # Initialize configurations
 load_dotenv()
@@ -56,28 +57,28 @@ def get_db_connection():
         password=DB_PASSWORD
     )
 
-def load_data_from_db(is_train=True):
-    """Loads training or testing features from the database.
-    Splits based on exercise_id boundary 1407413 (80% training set split)
-    """
-    split_op = "<=" if is_train else ">"
-    dataset_name = "TRAIN" if is_train else "TEST"
-    print(f"Loading {dataset_name} set from database...")
+def load_data_from_db():
+    """Loads all features and user_ids from the database."""
+    print("Loading all features from database...")
     
-    query = f"""
+    query = """
         SELECT 
             ef.is_error, ef.is_verb_3sg, ef.is_pron_subject, ef.is_preposition, ef.format_listen, 
             ef.days_in_course, ef.client_android, ef.client_ios, 
-            ef.session_practice, ef.session_test, ef.format_reverse_translate, ef.token_order
+            ef.session_practice, ef.session_test, ef.format_reverse_translate, ef.token_order,
+            e.user_id
         FROM engineered_features ef
         JOIN raw_tokens t ON ef.token_id = t.token_id
-        WHERE t.exercise_id {split_op} 1407413;
+        JOIN raw_exercises e ON t.exercise_id = e.exercise_id;
     """
     
     conn = get_db_connection()
     try:
-        df = pd.read_sql(query, conn)
-        print(f"Loaded {len(df)} rows for {dataset_name} set.")
+        # Suppress pandas read_sql user warnings regarding DBAPI2 connections
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", UserWarning)
+            df = pd.read_sql(query, conn)
+        print(f"Loaded {len(df)} rows from database.")
         
         # Compute cross-product interaction terms
         df['listen_x_prep'] = df['format_listen'] & df['is_preposition']
@@ -88,7 +89,7 @@ def load_data_from_db(is_train=True):
         df['translate_x_pron'] = df['format_reverse_translate'] & df['is_pron_subject']
         
         # Optimize memory by downcasting types
-        bool_cols = [c for c in df.columns if c != 'days_in_course' and c != 'token_order']
+        bool_cols = [c for c in df.columns if c not in ['days_in_course', 'token_order', 'user_id']]
         for col in bool_cols:
             df[col] = df[col].astype(bool)
         df['days_in_course'] = df['days_in_course'].astype(np.float32)
@@ -161,28 +162,48 @@ def print_tree_rules(tree, feature_names, node_id=0, depth=0, lines=None):
     return lines
 
 def main():
-    os.makedirs("03_modeling", exist_ok=True)
-    os.makedirs("04_outputs", exist_ok=True)
+    # Ensure unified output directory exists
+    os.makedirs("04_outputs/models", exist_ok=True)
     
-    # 1. Load Train data
-    df_train = load_data_from_db(is_train=True)
+    # 1. Load all data from database
+    df_all = load_data_from_db()
+    
+    # Partition train/test set strictly by user_id
+    print("Partitioning train/test sets strictly by user_id to prevent data leakage...")
+    unique_users = df_all['user_id'].unique()
+    train_users, test_users = train_test_split(unique_users, test_size=0.2, random_state=42)
+    
+    train_users_set = set(train_users)
+    train_mask = df_all['user_id'].isin(train_users_set)
+    
+    df_train = df_all[train_mask].copy()
+    df_test = df_all[~train_mask].copy()
+    
     X_train = df_train[FEATURE_COLS]
     y_train = df_train[TARGET_COL]
+    groups_train = df_train['user_id'].values
+    
+    X_test = df_test[FEATURE_COLS]
+    y_test = df_test[TARGET_COL]
+    
+    print(f"\nTotal exercises dataset split summary:")
+    print(f"  - Training Set: {len(train_users)} users ({len(df_train)} tokens)")
+    print(f"  - Test Set:     {len(test_users)} users ({len(df_test)} tokens)")
     
     print("\n--- Training Set Class Distribution ---")
     neg, pos = np.bincount(y_train)
     print(f"Correct (False): {neg} ({neg/len(y_train)*100:.2f}%)")
     print(f"Error (True): {pos} ({pos/len(y_train)*100:.2f}%)")
     
-    # 2. Stratified Cross-Validation on Train set
-    print("\nRunning 5-fold Stratified Cross-Validation...")
-    skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+    # 2. StratifiedGroupKFold Cross-Validation on Train set
+    print("\nRunning 5-fold StratifiedGroupKFold Cross-Validation...")
+    sgkf = StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=42)
     
     lr_cv_aucs, lr_cv_f1s = [], []
     dt_cv_aucs, dt_cv_f1s = [], []
     
     fold = 1
-    for train_idx, val_idx in skf.split(X_train, y_train):
+    for train_idx, val_idx in sgkf.split(X_train, y_train, groups=groups_train):
         print(f"Processing CV Fold {fold}/5...")
         X_tr, X_val = X_train.iloc[train_idx], X_train.iloc[val_idx]
         y_tr, y_val = y_train.iloc[train_idx], y_train.iloc[val_idx]
@@ -229,24 +250,16 @@ def main():
     best_dt_thresh, best_dt_f1 = find_optimal_threshold(y_train, dt_train_probs)
     print(f"Optimal DT Threshold: {best_dt_thresh:.2f} (Train F1: {best_dt_f1:.4f})")
     
-    # Save final models to disk
-    with open("03_modeling/logistic_regression_model.pkl", "wb") as f:
+    # Save final models directly to unified directory
+    with open("04_outputs/models/logistic_regression_model.pkl", "wb") as f:
         pickle.dump(lr_model, f)
-    with open("03_modeling/decision_tree_model.pkl", "wb") as f:
+    with open("04_outputs/models/decision_tree_model.pkl", "wb") as f:
         pickle.dump(dt_model, f)
-    print("Models saved to '03_modeling/' directory.")
+    print("Models saved directly to '04_outputs/models/' directory.")
     
-    # Clean up training data from memory
-    del df_train, X_train, y_train, lr_train_probs, dt_train_probs
-    import gc
-    gc.collect()
+    # Skip garbage collection cleanup to keep variables available for report generation
     
-    # 4. Load Test data
-    df_test = load_data_from_db(is_train=False)
-    X_test = df_test[FEATURE_COLS]
-    y_test = df_test[TARGET_COL]
-    
-    # 5. Evaluate on Test set
+    # 4. Evaluate on Test set
     print("\nEvaluating on Test set...")
     lr_test_probs = lr_model.predict_proba(X_test)[:, 1]
     dt_test_probs = dt_model.predict_proba(X_test)[:, 1]
@@ -267,7 +280,7 @@ def main():
     print(f"Logistic Regression: AUC={lr_eval_opt['auc']:.4f}, F1={lr_eval_opt['f1']:.4f}, Prec={lr_eval_opt['precision']:.4f}, Rec={lr_eval_opt['recall']:.4f}")
     print(f"Decision Tree:       AUC={dt_eval_opt['auc']:.4f}, F1={dt_eval_opt['f1']:.4f}, Prec={dt_eval_opt['precision']:.4f}, Rec={dt_eval_opt['recall']:.4f}")
     
-    # 6. Extract and format model coefficients / splits
+    # 5. Extract and format model coefficients / splits
     # A. LR Coefficients
     coefs = lr_model.coef_[0]
     odds_ratios = np.exp(coefs)
@@ -345,9 +358,9 @@ Our models prioritize **pedagogical interpretability** over black-box optimizati
 
 ## 1. Predictive Performance Summary
 
-The dataset consists of **2,622,957** tokens split sequentially at a boundary of `exercise_id = 1407413`:
-- **Training Set:** 80% of exercises (approx. 2.1M tokens)
-- **Test Set:** 20% of exercises ({len(y_test)} tokens)
+The dataset consists of **2,622,957** tokens partitioned at the learner level to prevent data leakage:
+- **Training Set:** 80% of unique users ({len(train_users)} users, {len(df_train)} tokens)
+- **Test Set:** 20% of unique users ({len(test_users)} users, {len(df_test)} tokens)
 - **Class Imbalance:** 87.39% Correct, 12.61% Error (approx. 7:1 ratio)
 
 ### Validation & Test Metrics

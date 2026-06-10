@@ -1,46 +1,46 @@
-If format_listen is False:
-|   If format_reverse_translate is False:
-|   |   If token_order <= 1.50:
-|   |   |   If is_verb_3sg is False:
-|   |   |   |   Leaf: Error Rate = 2.45% (Samples: 213034)
-|   |   |   If is_verb_3sg is True:
-|   |   |   |   Leaf: Error Rate = 38.54% (Samples: 397)
-|   |   If token_order > 1.50:
-|   |   |   If session_practice is False:
-|   |   |   |   Leaf: Error Rate = 5.55% (Samples: 283261)
-|   |   |   If session_practice is True:
-|   |   |   |   Leaf: Error Rate = 7.94% (Samples: 56158)
-|   If format_reverse_translate is True:
-|   |   If token_order <= 1.50:
-|   |   |   If translate_x_pron is False:
-|   |   |   |   Leaf: Error Rate = 12.81% (Samples: 161676)
-|   |   |   If translate_x_pron is True:
-|   |   |   |   Leaf: Error Rate = 6.52% (Samples: 101088)
-|   |   If token_order > 1.50:
-|   |   |   If session_practice is False:
-|   |   |   |   Leaf: Error Rate = 14.58% (Samples: 551250)
-|   |   |   If session_practice is True:
-|   |   |   |   Leaf: Error Rate = 21.26% (Samples: 126666)
-If format_listen is True:
+If token_order <= 1.50:
 |   If is_pron_subject is False:
+|   |   If format_listen is False:
+|   |   |   If format_reverse_translate is False:
+|   |   |   |   Leaf: Error Rate = 3.22% (Samples: 139246)
+|   |   |   If format_reverse_translate is True:
+|   |   |   |   Leaf: Error Rate = 12.78% (Samples: 160487)
+|   |   If format_listen is True:
+|   |   |   If days_in_course <= -0.09:
+|   |   |   |   Leaf: Error Rate = 12.64% (Samples: 43249)
+|   |   |   If days_in_course > -0.09:
+|   |   |   |   Leaf: Error Rate = 16.76% (Samples: 52271)
+|   If is_pron_subject is True:
+|   |   If listen_x_pron is False:
+|   |   |   If format_reverse_translate is False:
+|   |   |   |   Leaf: Error Rate = 1.15% (Samples: 78853)
+|   |   |   If format_reverse_translate is True:
+|   |   |   |   Leaf: Error Rate = 6.48% (Samples: 100965)
+|   |   If listen_x_pron is True:
+|   |   |   If client_ios is False:
+|   |   |   |   Leaf: Error Rate = 7.98% (Samples: 72752)
+|   |   |   If client_ios is True:
+|   |   |   |   Leaf: Error Rate = 5.70% (Samples: 15895)
+If token_order > 1.50:
+|   If format_listen is False:
+|   |   If format_reverse_translate is False:
+|   |   |   If session_practice is False:
+|   |   |   |   Leaf: Error Rate = 5.50% (Samples: 289097)
+|   |   |   If session_practice is True:
+|   |   |   |   Leaf: Error Rate = 7.66% (Samples: 57897)
+|   |   If format_reverse_translate is True:
+|   |   |   If session_practice is False:
+|   |   |   |   Leaf: Error Rate = 14.53% (Samples: 551024)
+|   |   |   If session_practice is True:
+|   |   |   |   Leaf: Error Rate = 21.06% (Samples: 124900)
+|   If format_listen is True:
 |   |   If session_practice is False:
-|   |   |   If days_in_course <= -0.14:
-|   |   |   |   Leaf: Error Rate = 14.97% (Samples: 179255)
-|   |   |   If days_in_course > -0.14:
-|   |   |   |   Leaf: Error Rate = 20.26% (Samples: 214672)
+|   |   |   If days_in_course <= -0.19:
+|   |   |   |   Leaf: Error Rate = 14.57% (Samples: 136802)
+|   |   |   If days_in_course > -0.19:
+|   |   |   |   Leaf: Error Rate = 20.10% (Samples: 187636)
 |   |   If session_practice is True:
 |   |   |   If token_order <= 3.50:
-|   |   |   |   Leaf: Error Rate = 22.09% (Samples: 73300)
+|   |   |   |   Leaf: Error Rate = 22.24% (Samples: 59561)
 |   |   |   If token_order > 3.50:
-|   |   |   |   Leaf: Error Rate = 31.93% (Samples: 38953)
-|   If is_pron_subject is True:
-|   |   If token_order <= 1.50:
-|   |   |   If client_ios is False:
-|   |   |   |   Leaf: Error Rate = 8.49% (Samples: 71518)
-|   |   |   If client_ios is True:
-|   |   |   |   Leaf: Error Rate = 5.80% (Samples: 16160)
-|   |   If token_order > 1.50:
-|   |   |   If token_order <= 3.50:
-|   |   |   |   Leaf: Error Rate = 14.44% (Samples: 8461)
-|   |   |   If token_order > 3.50:
-|   |   |   |   Leaf: Error Rate = 29.74% (Samples: 1355)
+|   |   |   |   Leaf: Error Rate = 31.12% (Samples: 39769)

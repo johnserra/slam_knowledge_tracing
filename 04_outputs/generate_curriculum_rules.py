@@ -16,10 +16,16 @@ FEATURE_COLS = [
     'session_practice',
     'session_test',
     'format_reverse_translate',
-    'token_order'
+    'token_order',
+    'listen_x_prep',
+    'listen_x_verb3sg',
+    'listen_x_pron',
+    'translate_x_prep',
+    'translate_x_verb3sg',
+    'translate_x_pron'
 ]
 
-def traverse_tree(tree, feature_names, node_id=0, current_path=None, rules=None):
+def traverse_tree(tree, feature_names, node_id=0, current_path=None, rules=None, min_samples_gate=1000):
     if current_path is None:
         current_path = []
     if rules is None:
@@ -35,8 +41,8 @@ def traverse_tree(tree, feature_names, node_id=0, current_path=None, rules=None)
     
     # Check if leaf node
     if left_child == right_child:
-        # We only generate rules for high-risk cohorts (exceeding baseline 12.6%)
-        if prob_error >= 0.15:
+        # We only generate rules for high-risk cohorts (exceeding baseline 12.6%) with sufficient sample size
+        if prob_error >= 0.15 and total_samples >= min_samples_gate:
             # Determine CTL Errorless Teaching Scaffold Action
             if prob_error >= 0.30:
                 action = "FORCE_TAP_WORD_BANK_WITH_EXPLICIT_HINT"
@@ -68,7 +74,7 @@ def traverse_tree(tree, feature_names, node_id=0, current_path=None, rules=None)
             "description": f"{feat} is False" if thresh == 0.5 else f"{feat} <= {thresh:.2f}"
         }
         current_path.append(left_cond)
-        traverse_tree(tree, feature_names, left_child, current_path, rules)
+        traverse_tree(tree, feature_names, left_child, current_path, rules, min_samples_gate)
         current_path.pop()
         
         # Branch Right (feature > threshold)
@@ -79,7 +85,7 @@ def traverse_tree(tree, feature_names, node_id=0, current_path=None, rules=None)
             "description": f"{feat} is True" if thresh == 0.5 else f"{feat} > {thresh:.2f}"
         }
         current_path.append(right_cond)
-        traverse_tree(tree, feature_names, right_child, current_path, rules)
+        traverse_tree(tree, feature_names, right_child, current_path, rules, min_samples_gate)
         current_path.pop()
         
     return rules
@@ -97,7 +103,7 @@ def main():
         dt_model = pickle.load(f)
         
     print("Extracting high-risk pedagogical rules from Decision Tree...")
-    rules = traverse_tree(dt_model.tree_, FEATURE_COLS)
+    rules = traverse_tree(dt_model.tree_, FEATURE_COLS, min_samples_gate=1000)
     
     # Save rules to JSON
     with open(output_path, "w") as f:

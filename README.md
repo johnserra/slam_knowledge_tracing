@@ -31,22 +31,22 @@ We engineer syntactic and morphological features to represent three core cross-l
 
 ## Model Performance
 
-The dataset was split chronologically/sequentially (80% training, 20% test) to prevent look-ahead leakage. 
+To prevent user-level data leakage, the dataset was partitioned at the learner level (80% train users, 20% test users). Cross-validation was performed using `StratifiedGroupKFold` grouped by `user_id`.
 
-| Model | CV AUC-ROC | Test AUC-ROC | Test F1 (Optimal Threshold) |
+| Model | CV AUC-ROC | Test AUC-ROC | Test F1 (Optimal Threshold = 0.13) |
 | :--- | :---: | :---: | :---: |
-| **Logistic Regression (with Interaction Terms)** | **0.6617** | **0.6611** | **0.3155** |
-| **Decision Tree (depth=4)** | **0.6276** | **0.6262** | **0.2882** |
+| **Logistic Regression (with Interaction Terms)** | **0.6679** | **0.6609** | **0.2936** |
+| **Decision Tree (depth=4)** | **0.6613** | **0.6600** | **0.2886** |
 
 ### Key Odds Ratios (Logistic Regression)
 
 An Odds Ratio (OR) > 1 indicates that a feature increases error probability; an OR < 1 indicates a decrease.
 
-* **`format_listen` (OR: 4.31):** Listening exercises increase the odds of a token error by **+331.4%** compared to standard tapping formats.
-* **`format_reverse_translate` (OR: 2.11):** Free translation exercises (writing) increase error odds by **+111.3%** compared to tapping, validating the Output Hypothesis.
+* **`format_listen` (OR: 4.21):** Listening exercises increase the odds of a token error by **+320.8%** compared to standard tapping formats.
+* **`format_reverse_translate` (OR: 3.27):** Free translation exercises (writing) increase error odds by **+226.7%** compared to tapping, validating the Output Hypothesis.
 * **`is_preposition` (OR: 1.54):** Prepositional tokens increase error odds by **+54.4%** due to Spanish-to-English lexical interference.
-* **`is_pron_subject` (OR: 0.34):** Explicitly required subject pronouns reduce error odds by **-65.7%** when they are grammatically simple.
-* **`translate_x_pron` (OR: 1.62):** Subject pronoun error odds rise significantly during free writing (reverse translation), capturing active pro-drop transfer errors.
+* **`is_pron_subject` (OR: 0.33):** Explicitly required subject pronouns reduce error odds by **-66.8%** when they are grammatically simple.
+* **`translate_x_pron` (OR: 1.68):** Subject pronoun error odds rise significantly during free writing (reverse translation), capturing active pro-drop transfer errors (OR increases by **+68.1%**).
 
 ---
 
